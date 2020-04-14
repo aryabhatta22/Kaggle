@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 df_train = pd.read_csv('train.csv')
 df_test = pd.read_csv('test.csv')
@@ -25,13 +26,13 @@ X[:, 1] = labelencoder_X_2.fit_transform(X[:,1])
                                     # CONFIRMED CASE PREDICTION
 
 def ConfirmedCasePrediction(countryCode,startingIndex):
-    import matplotlib.pyplot as plt
     i=startingIndex
     X_country = X[X[:,0] == countryCode]                          # X for particular country
     y_country = y[i:i+len(X_country)]                   # y for selected country 
-    y_country = y_country[X_country[:,1].argsort()]
-    X_country = X_country[X_country[:,1].argsort()]
     
+    print("for country "+ str((labelencoder_X_1.inverse_transform([countryCode]))[0]) +" min case "+str (min(y_country[:,0]))+ " max case " +str( max(y_country[:,0])))
+    print(" >> start index "+ str(i))
+    print(" >> end index "+ str(i+len(X_country)))
     
                                         # Random Forest                                     
     from sklearn.ensemble import RandomForestRegressor
@@ -49,16 +50,12 @@ def ConfirmedCasePrediction(countryCode,startingIndex):
     plt.xlabel("Day")
     plt.ylabel('Confirmed Cases')
     plt.show() 
-    plt.close('plt')
                         # preydictions
     #import math
     #y_pred = regressor.predict(X_country[:,1].reshape(len(X_country),1))
     #y_pred = [math.floor(case) for case in y_pred]
-    
-import time
 
 startIndex =0
 for i in range(0,len(np.unique(X[:,0]))):
     ConfirmedCasePrediction(i,startIndex)
-    time.sleep(0.5)
-    startIndex = len(X[X[:,0] == i])
+    startIndex = startIndex+ len(X[X[:,0] == i])
