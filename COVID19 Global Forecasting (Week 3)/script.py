@@ -39,18 +39,18 @@ X= X[0:lengthX,:]                   # getting original training set
 
                                     # UPDATE SUBMISSION file
                                     
-def updateSubmission(regressor, countryCode,label):
+def updateSubmission(regressor, countryCode,startIndexTest,label):
     if label == "ConfirmedCases":
         j = 1
     elif label == "Fatalities":
         j =2
     X_country = X_test[X_test[:,0] == countryCode] 
     for i in range(0, len(X_country)):
-        X_sub[i,j] = math.floor(regressor.predict(np.asarray(X_country[i,1]).reshape(1,1)))
+        X_sub[i+startIndexTest,j] = math.floor(regressor.predict(np.asarray(X_country[i,1]).reshape(1,1)))
 
                                     # CONFIRMED CASE/ FATALITIES PREDICTION
 
-def ConfirmedCasePrediction(countryCode,startingIndex, label):
+def ConfirmedCasePrediction(countryCode,startingIndex, startIndexTest,label):
     if label == "ConfirmedCases":
         j = 0
     elif label == "Fatalities":
@@ -60,14 +60,14 @@ def ConfirmedCasePrediction(countryCode,startingIndex, label):
     X_country = X[X[:,0] == countryCode]                          # X for particular country
     y_country = y[i:i+len(X_country)]                               # y for selected country 
     
-    print("for country "+ str((labelencoder_X_1.inverse_transform([countryCode]))[0]) +" min case "+str (min(y_country[:,0]))+ " max case " +str( max(y_country[:,0])))
+    print(label+" in "+ str((labelencoder_X_1.inverse_transform([countryCode]))[0]) +" min "+str (min(y_country[:,0]))+ " max " +str( max(y_country[:,0])))
 
     
                                         # Random Forest                                     
     from sklearn.ensemble import RandomForestRegressor
     regressor = RandomForestRegressor(n_estimators = 300, random_state = 0)
     regressor.fit(X_country[:,1].reshape(len(X_country), 1),y_country[:,j]) 
-    updateSubmission(regressor, countryCode,label)
+    updateSubmission(regressor, countryCode,startIndexTest,label)
                         # visulaizing data 
     """
     # Avoid if you dont you just want output not graphs
@@ -86,16 +86,20 @@ def ConfirmedCasePrediction(countryCode,startingIndex, label):
     
 # for predicting Fatalities
 startIndex =0
+startIndexTest= 0
 for i in range(0,len(np.unique(X[:,0]))):
-    ConfirmedCasePrediction(i,startIndex,"Fatalities")
+    ConfirmedCasePrediction(i,startIndex,startIndexTest,"Fatalities")
     startIndex = startIndex+ len(X[X[:,0] == i])
+    startIndexTest = startIndexTest+(len(X_test[X_test[:,0] == i]))
 
 # for predicting confirmed cases
+startIndexTest= 0
 startIndex = 0
 for i in range(0,len(np.unique(X[:,0]))):
-    ConfirmedCasePrediction(i,startIndex,"ConfirmedCases")
+    ConfirmedCasePrediction(i,startIndex,startIndexTest,"ConfirmedCases")
     startIndex = startIndex+ len(X[X[:,0] == i])
-    
+    startIndexTest = startIndexTest+(len(X_test[X_test[:,0] == i]))
+  
 """
   
 # For kaggle submission only
