@@ -35,6 +35,10 @@ X_test[:, 0] = labelencoder_X_1.transform(X_test[:, 0])
 X_test[:, 1] = labelencoder_X_2.transform(X_test[:,1])
 
 X= X[0:lengthX,:]                   # getting original training set
+y = y[X[:,0].argsort()]             # to arrange data in ascending order of label encoding
+X = X[X[:,0].argsort()]
+X_sub = X_sub[X_test[:,0].argsort()]
+X_test = X_test[X_test[:,0].argsort()]
 
 
                                     # UPDATE SUBMISSION file
@@ -75,7 +79,7 @@ def ConfirmedCasePrediction(countryCode,startingIndex, startIndexTest,label):
     X_grid = X_grid.reshape((len(X_grid)), 1) 
     plt.ion()
     plt.figure()
-    plt.scatter(X_country[:,1], y_country[:,0], color ='red', label='Confirmed Case')
+    plt.scatter(X_country[:,1], y_country[:,j], color ='red', label='Confirmed Case')
     plt.plot(X_grid, regressor.predict(X_grid), color='blue',label='Prediction line')
     plt.legend(loc="upper left")
     plt.title('Day vs Confirmed cases in '+ str((labelencoder_X_1.inverse_transform([countryCode]))[0]))
