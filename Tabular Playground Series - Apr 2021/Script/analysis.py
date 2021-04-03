@@ -33,7 +33,7 @@ headers_train = df_train.columns.values
 headers_test = df_test.columns.values
 headers_train_null =  []
 headers_test_null =  []
-headers_irrelavant = ['PassengerId','Ticket','Fare']
+headers_irrelavant = ['PassengerId','Name','Ticket','Fare']
 
 
 def findNullColumns(df, headers):
@@ -45,12 +45,13 @@ def findNullColumns(df, headers):
 
 headers_train_null = findNullColumns(df_train, headers_train)        
 headers_test_null = findNullColumns(df_test, headers_test)
+
         
         
 """
 1. Removing irrelavnt columns
 
-PassengerID,ticket, fare
+PassengerID,Name,ticket, fare
 
 """
 
@@ -112,3 +113,78 @@ print('Std: ', df_test['Age'].std())
 df_train['Age'].fillna( df_train['Age'].mean(), inplace = True)
 df_test['Age'].fillna( df_test['Age'].median(), inplace = True)
 
+        # Cabin
+
+# since more than 50% of total values in the training and test data is null, we will drop the cabin column
+
+df_train = df_train.drop(columns=['Cabin'])
+df_test = df_test.drop(columns=['Cabin'])
+
+
+        # Embarked
+
+# get percent of each emabrked class
+
+def getDistribution(df):
+    dict_value_count = df.value_counts()
+    size_df = df.shape[0]
+    for key in dict_value_count.keys():
+        dict_value_count[key] = float(dict_value_count[key]*100/size_df)
+    print(dict_value_count)
+    return
+
+getDistribution(df_train['Embarked'])
+getDistribution(df_test['Embarked'])
+
+sns.countplot(df_train['Embarked'], hue=df_train["Survived"])
+
+#since class 'S' has more than 3/4th of the non null values for trainig 
+# and similar ratio for test and null values is just ~1% or ~2%, we can replcae it with
+
+df_train['Embarked'].fillna( 'S', inplace = True)
+df_test['Embarked'].fillna( 'S', inplace = True)
+
+
+headers_train_null = findNullColumns(df_train, headers_train)        
+headers_test_null = findNullColumns(df_test, headers_test)
+
+"""
+3. Check for class imbalance
+
+"""
+
+getDistribution(df_train['Survived'])
+sns.countplot(df_train['Survived'])
+
+# thus there's no class imbalance
+
+"""
+4. Count Plot
+
+"""
+fig, ax = plt.subplots(2,2, figsize=(10,5))
+fig.suptitle("Count Plot")
+
+sns.countplot(df_train['Pclass'], hue= df_train['Survived'], ax=ax[0,0])
+ax[0,0].set_title('Pclass')
+
+sns.countplot(df_train['Sex'], hue= df_train['Survived'] , ax=ax[0,1])
+ax[0,1].set_title('Sex')
+
+sns.countplot(df_train['SibSp'], hue= df_train['Survived'] , ax=ax[1,0])
+ax[1,0].set_title('SibSp')
+
+sns.countplot(df_train['Parch'], hue= df_train['Survived'] , ax=ax[1,1])
+ax[1,1].set_title('Parch')
+
+
+fig.tight_layout()
+plt.show()
+
+"""
+5. Save Training and Test data
+
+"""
+
+df_train.to_csv("../Data/clean_training.csv", index=False)
+df_test.to_csv("../Data/clean_test.csv", index=False)
