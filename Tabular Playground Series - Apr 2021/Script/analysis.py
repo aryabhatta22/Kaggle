@@ -182,7 +182,45 @@ fig.tight_layout()
 plt.show()
 
 """
-5. Save Training and Test data
+5. Adding New Features
+
+"""
+
+# Age Category
+
+def categorizeAge(row):
+    if row['Age'] >= 0 and row['Age'] <=10:
+        ageCategory = -1
+    elif row['Age'] > 10 and row['Age'] <=20:
+        ageCategory = 0
+    elif row['Age'] > 20 and row['Age'] <=40:
+        ageCategory = 1
+    elif row['Age'] > 40 and row['Age'] <=60:
+        ageCategory = 2
+    elif row['Age'] > 60 and row['Age'] <=80:
+        ageCategory = 3
+    else:
+        ageCategory = 4
+    return ageCategory
+
+df_train['Age Category'] = df_train.apply(categorizeAge, axis = 1)
+df_test['Age Category'] = df_test.apply(categorizeAge, axis = 1)
+
+# Lone Traveler
+
+def isLoneTraveler(row):
+    if row['SibSp'] == 0 and row['Parch'] == 0:
+        loneTraveler = 1
+    else:
+        loneTraveler = 0
+    return loneTraveler
+
+df_train['Lone Traveler'] = df_train.apply(isLoneTraveler, axis = 1)
+df_test['Lone Traveler'] = df_test.apply(isLoneTraveler, axis = 1)
+
+
+"""
+6. Save Training and Test data
 
 """
 

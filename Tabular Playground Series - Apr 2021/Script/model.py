@@ -24,9 +24,10 @@ def preProcessData(df, isTrain = False):
     pclass = df.loc[:,'Pclass'].values
     sex = df.loc[:,'Sex'].values
     embarked = df.loc[:,'Embarked'].values
+    ageCat = df.loc[:,'Age Category'].values
     
     # numeric values
-    X = df[['Age','SibSp','Parch']].to_numpy()
+    X = df[['Age','SibSp','Parch','Lone Traveler']].to_numpy()
     y=[]
     if isTrain:
         y = df_train.loc[:,'Survived'].values
@@ -51,10 +52,14 @@ def preProcessData(df, isTrain = False):
     embarked = to_categorical(embarked)
     embarked = embarked[:,:-1]
     
+    # Pclass
+    ageCat = to_categorical(ageCat)
+    ageCat=ageCat[:,:-1]
+    
     """
     Concatenate all features
     """
-    X = np.concatenate((sex, pclass, embarked, X), axis = 1)
+    X = np.concatenate((sex, pclass, embarked,ageCat, X), axis = 1)
     return X,y
 
 """
@@ -137,8 +142,9 @@ from keras.models import Sequential
 from keras.layers import Dense
 
 clf_ann = Sequential()                   
-clf_ann.add(Dense(output_dim = 5, init = 'uniform', activation = 'relu', input_dim = 9 ))                                                 
-clf_ann.add(Dense(output_dim = 3, init = 'uniform', activation = 'relu'))
+clf_ann.add(Dense(output_dim = 8, init = 'uniform', activation = 'relu', input_dim = 14 ))                                                 
+clf_ann.add(Dense(output_dim = 4, init = 'uniform', activation = 'relu'))
+clf_ann.add(Dense(output_dim = 2, init = 'uniform', activation = 'relu'))
 clf_ann.add(Dense(output_dim = 1, init = 'uniform', activation = 'sigmoid', input_dim = 11 ))
 clf_ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'] )
 history = clf_ann.fit(X_train, y_train, epochs = 20, batch_size = 32, shuffle = False, validation_data=(X_test, y_test))
@@ -220,11 +226,13 @@ table_.field_names = ['Model', "Accuracy"]
 table_.add_row(["KNN","{:.2f}".format(ac_knn)])
 table_.add_row(["Random Forest","{:.2f}".format(ac_rf)])
 table_.add_row(["Logistic Regression","{:.2f}".format(ac_lr)])
-table_.add_row(["Kernel SVM","{:.2f}".format(ac_svm)])
+#table_.add_row(["Kernel SVM","{:.2f}".format(ac_svm)])
 table_.add_row(["Naive Bayes","{:.2f}".format(ac_nb)])
-table_.add_row(["SVM","{:.2f}".format(ac_svc)])
+#table_.add_row(["SVM","{:.2f}".format(ac_svc)])
 table_.add_row(["ANN","{:.2f}".format(ac_ann)])
+table_.add_row(["XGB","{:.2f}".format(ac_xgb)])
 
+print(table_)
 """
  Creating Submission file
 """
