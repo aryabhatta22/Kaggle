@@ -189,13 +189,13 @@ plt.show()
 # Age Category
 
 def categorizeAge(row):
-    if row['Age'] >= 0 and row['Age'] <=10:
+    if row['Age'] >= 0 and row['Age'] <=5:
         ageCategory = -1
-    elif row['Age'] > 10 and row['Age'] <=20:
+    elif row['Age'] > 5 and row['Age'] <=18:
         ageCategory = 0
-    elif row['Age'] > 20 and row['Age'] <=40:
+    elif row['Age'] > 18 and row['Age'] <=30:
         ageCategory = 1
-    elif row['Age'] > 40 and row['Age'] <=60:
+    elif row['Age'] > 30 and row['Age'] <=60:
         ageCategory = 2
     elif row['Age'] > 60 and row['Age'] <=80:
         ageCategory = 3
